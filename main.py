@@ -3,26 +3,37 @@ import numpy as np
 from skimage import exposure as ex
 from process import clearimage
 
-filenames = ['images/1.jpg', 'images/2.jpg', 'images/3.jpg', 'images/4.jpg']
+filenames = ['img/1.png', 'img/2.png', 'img/3.png', 'img/4.png', 'img/5.png'
+             , 'img/6.png']
+
+a = 0
+b = 0
 
 def main():
-    cap = cv2.VideoCapture('/dev/video0')
+    global a
+    cap = cv2.VideoCapture('/dev/video2')
     
     while True:
         if cap is not None:
             ret, frame = cap.read()
-            if frame is not None:
-                #cv2.imwrite('images/11.png', frame)
+            if ret == True:
                 im = contrastadjust(frame)
                 cl = clearimage(im)
+                if cv2.waitKey(1) == ord('c'):
+                    a += 1
+                    cv2.imwrite('im/'+str(a)+'.png', cl)
+                    
                 cv2.imshow('camera',cl)
+                
                 if cv2.waitKey(1) == ord('q'):
                     cv2.destroyAllWindows()
                     cap.release()
                     break
             else:
                 print('camera not readable')
+                readimages()
                 cap.release()
+                break
                 
 
         else:
@@ -43,22 +54,21 @@ def contrastadjust(imag):
    
 
 def readimages():
+    global b
     for x in filenames:
         img = cv2.imread(x)
         if img is not None:
             im = img.copy()
             contrast = contrastadjust(im)
-            ima = cv2.resize(contrast, (700,500))
+            ima = clearimage(contrast)
+            ima = cv2.resize(ima, (840,540))
+            b += 1
+            #cv2.imwrite('im/'+str(b)+'.png', ima)
             cv2.imshow('foto', ima)
             cv2.waitKey(0)
             cv2.destroyAllWindows()     
             
-            """labimg =  cv2.cvtColor(im, cv2.COLOR_BGR2LAB)
-            l,a,b = cv2.split(labimg)
-            clahe = cv2.createCLAHE(clipLimit=12.0, tileGridSize=(38,38))
-            cl = clahe.apply(l)
-            im2 = cv2.merge((cl,a,b))
-            col = cv2.cvtColor(im2, cv2.COLOR_LAB2BGR)"""  
+            
             
 if __name__ == '__main__':
     main()
