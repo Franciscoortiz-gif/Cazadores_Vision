@@ -2,7 +2,10 @@ import cv2
 import numpy as np
 from skimage import exposure as ex
 from process import clearimage
-
+from process import clearobjects
+from process import detection
+from process import mask, findcenterbottle, findlettersoutside
+#Imagenes de la carpeta /im
 filenames = ['img/1.png', 'img/2.png', 'img/3.png', 'img/4.png', 'img/5.png'
              , 'img/6.png']
 
@@ -19,11 +22,16 @@ def main():
             if ret == True:
                 im = contrastadjust(frame)
                 cl = clearimage(im)
+                maks = mask(cl)
+                outsid, cente =  clearobjects(maks)
+                centerr =  findcenterbottle(cente)
+                bottlelet = findlettersoutside(outsid)
+                #det = detection(cente)
                 if cv2.waitKey(1) == ord('c'):
                     a += 1
-                    cv2.imwrite('im/'+str(a)+'.png', cl)
+                    cv2.imwrite('im/'+str(a)+'.png', frame)
                     
-                cv2.imshow('camera',cl)
+                cv2.imshow('camera',cente)
                 
                 if cv2.waitKey(1) == ord('q'):
                     cv2.destroyAllWindows()
@@ -61,10 +69,15 @@ def readimages():
             im = img.copy()
             contrast = contrastadjust(im)
             ima = clearimage(contrast)
-            ima = cv2.resize(ima, (840,540))
+            im4 = mask(ima)
+            outside,center = clearobjects(im4)
+            bottlecenter =  findcenterbottle(center)
+            bottleletters = findlettersoutside(outside)
+            im3 = detection(im4)
+            irez = cv2.resize(bottleletters, (840,540))
             b += 1
             #cv2.imwrite('im/'+str(b)+'.png', ima)
-            cv2.imshow('foto', ima)
+            cv2.imshow('foto', irez)
             cv2.waitKey(0)
             cv2.destroyAllWindows()     
             
