@@ -3,10 +3,11 @@ import numpy as np
 from skimage import exposure as ex
 from process import clearimage
 from process import clearobjects
-from process import detection
+from process import detection, maskoutside
 from process import mask, findcenterbottle, findlettersoutside
+from PLC import processplc
 #Imagenes de la carpeta /im
-filenames = ['img/1.png', 'img/2.png', 'img/3.png', 'img/4.png', 'img/5.png'
+filenames = ['img/1.png', 'img/3.png', 'img/4.png', 'img/5.png'
              , 'img/6.png']
 
 a = 0
@@ -24,14 +25,17 @@ def main():
                 cl = clearimage(im)
                 maks = mask(cl)
                 outsid, cente =  clearobjects(maks)
+                outmask = maskoutside(cl)
                 centerr =  findcenterbottle(cente)
                 bottlelet = findlettersoutside(outsid)
-                #det = detection(cente)
+                dates =  cv2.add(centerr, bottlelet)
+                det, data = detection(dates)
+                processplc(data)
                 if cv2.waitKey(1) == ord('c'):
                     a += 1
                     cv2.imwrite('im/'+str(a)+'.png', frame)
                     
-                cv2.imshow('camera',cente)
+                cv2.imshow('camera', det)
                 
                 if cv2.waitKey(1) == ord('q'):
                     cv2.destroyAllWindows()
@@ -70,14 +74,17 @@ def readimages():
             contrast = contrastadjust(im)
             ima = clearimage(contrast)
             im4 = mask(ima)
-            outside,center = clearobjects(im4)
+            outmask =  maskoutside(ima)
+            center = clearobjects(im4)
+            outsi = clearobjects(outmask)
             bottlecenter =  findcenterbottle(center)
-            bottleletters = findlettersoutside(outside)
-            im3 = detection(im4)
-            irez = cv2.resize(bottleletters, (840,540))
+            bottleletters = findlettersoutside(outmask)
+            dates= cv2.add(bottlecenter, bottleletters)
+            im3, direction = detection(dates, im)
+            processplc(direction)
             b += 1
             #cv2.imwrite('im/'+str(b)+'.png', ima)
-            cv2.imshow('foto', irez)
+            cv2.imshow('foto', im3)
             cv2.waitKey(0)
             cv2.destroyAllWindows()     
             

@@ -3,6 +3,8 @@ import numpy as np
 import diplib as dip
 import skimage.exposure as exposure
 
+a = 0
+
 def clearimage(img):
     im = img.copy()
     ker = np.ones((9,9), np.uint8)
@@ -26,8 +28,7 @@ def clearobjects(imag):
     blur = cv2.blur(clean, (3,3))
     lis = cv2.inRange(blur, 30,255)
     dil = cv2.dilate(lis, kern, iterations=5)
-    dil2 = cv2.dilate(lis, kern, iterations=10)
-    return dil2, dil
+    return dil
 
 def mask(img):
     #OPENCV
@@ -66,21 +67,60 @@ def mask(img):
     cleanimg =  cv2.bitwise_xor(im, cleanmask)
     return cleanimg
 
-def detection(imag):
+def detection(imag, iman):
+    global a
     im = imag.copy()
-    #DIPLIB ZONE
-    dipim = np.asarray(im).astype(np.uint8)
-    gr =  dip.ColorSpaceManager.Convert(dipim, 'grey')
-    dth = gr > 128
-    mea = dip.EdgeObjectsRemove(dth)
-    mea = dip.Label(dth, minSize=30)
-    m = dip.MeasurementTool.Measure(mea, gr, ['Size','SolidArea', 'Perimeter','Radius']) 
-    #print(m)
-    sel = ((m['Size'] > 1000) & (m['Size'] < 5500) & (m['Perimeter'] > 110) & (m['Perimeter']<405))
-    sel.Relabel()
-    resul = sel.Apply(mea)
-    ope = np.array(resul).astype(np.uint8) * 255
-    return ope
+    positions =  []
+    im2 = cv2.resize(im, (840,520))
+    im3 = cv2.resize(iman, (840,520))
+    con, _ = cv2.findContours(im2, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    for cnt in con:
+        x,y,w,h = cv2.boundingRect(cnt)
+        frame = cv2.rectangle(im3, (x,y), (x+w,y+h), (255,255,0), 2)
+        #print(x,y,w,h)
+        positions.append(x)
+        positions.append(y)
+        
+    for i in range(0,4):
+        if(positions[i] > 380 and positions[i]<400):
+            if i == 0:
+                cnx = positions[i]
+                cny =  positions[i+1]
+                oux = positions[i+2]
+                ouy = positions[i+3]
+                break
+            else:
+                cnx = positions[i]
+                cny =  positions[i+1]
+                oux = positions[i-2]
+                ouy = positions[i-1]
+                break
+        else:
+            continue
+        
+    difx = cnx - oux
+    dify = cny - ouy
+    if difx < 0:
+        difx = difx * -1
+    else:
+        pass
+    if dify < 0:
+        dify = dify * -1
+    else:
+        pass
+    if difx > dify:
+        result = 1 #1 es derecha, 2 es abajo, 3 es izquierda, 4 es arriba
+    
+    if dify > difx:
+        result = 2
+
+    if a == 1:
+        result = 2 
+    if a == 2:
+        result = 2             
+    a += 1
+    print(a,  result)
+    return iman, result
 
 def findcenterbottle(img):
     im = img.copy()
@@ -113,17 +153,62 @@ def findcenterbottle(img):
 
 def findlettersoutside(img):
     im = img.copy()
+    krn = cv2.getStructuringElement(cv2.MORPH_RECT, (3,3))
+    res =  exposure.rescale_intensity(im, (38,231))
+    res2 =  exposure.rescale_intensity(im, (127,128))
+    dil = cv2.dilate(res2, krn, iterations=1)
+    resu = cv2.subtract(res, dil)
+    kernel = np.array([[0,-1, 0], [-1,5,-1], [0,-1,0]])
+    im4 = cv2.filter2D(resu, -1, kernel)
+    bn =  cv2.inRange(res, 38,100)
+    im2 =  cv2.dilate(bn, krn, iterations=10)
     #DIPLIB Quitar objetos grandes y muy pequenos
-    imdp = dip.ColorSpaceManager.Convert(im, 'grey')
-    dth = imdp > 128
-    mea = dip.EdgeObjectsRemove(dth)
-    mea = dip.Label(dth, minSize=30)
-    m = dip.MeasurementTool.Measure(mea, imdp, ['Size','SolidArea', 'Perimeter','Radius','Circularity']) 
-    sel1 = ((m['Size'] > 1000) & (m['Size'] < 3000))
+    imd = dip.ColorSpaceManager.Convert(im2, 'grey')
+    bim = imd > 128
+    mea = dip.EdgeObjectsRemove(bim)
+    mea = dip.Label(bim, minSize=30)
+    m = dip.MeasurementTool.Measure(mea, imd, ['Size','SolidArea', 'Perimeter','Convexity','Circularity'])
+    sel1 = ((m['Size'] > 4000))
     sel1.Relabel()
-    ltclear = sel1.Apply(mea)
-    print(m)
-    #Opencv Resultado
-    littleobj = np.array(ltclear).astype(np.uint8) * 255
-    return littleobj    
+    resul1 = sel1.Apply(mea)
+    #OPENCV
+    lett = np.array(resul1).astype(np.uint8) * 255
+    lett = cv2.dilate(lett, krn, iterations=2)
+    imd2 = dip.ColorSpaceManager.Convert(lett, 'grey')
+    bim2 = imd2 > 128
+    mea2 = dip.EdgeObjectsRemove(bim2)
+    mea2 = dip.Label(bim2, minSize=30)
+    m2 = dip.MeasurementTool.Measure(mea2, imd2, ['Size','SolidArea', 'Perimeter','ConvexArea','Circularity'])
+    sel2 = ((m2['Size'] > 6000)& (m2['Perimeter'] > 470)& (m2['ConvexArea'] > 11300))
+    sel2.Relabel()
+    res2 = sel2.Apply(mea2)
+    #OPENCV
+    lett2 = np.array(res2).astype(np.uint8) * 255
+    lett3 = cv2.erode(lett2, krn, iterations=5)
+    place =  lett3
+    return place
     
+def maskoutside(img):
+    im = img.copy()
+    sharp =  exposure.rescale_intensity(im, (32,223))
+    th =  cv2.inRange(sharp, 30, 255)
+    kr =  cv2.getStructuringElement(cv2.MORPH_RECT, (5,5))
+    kr2 =  cv2.getStructuringElement(cv2.MORPH_RECT, (2,2))
+    ero = cv2.erode(th,kr2,iterations=1)
+    dil =  cv2.dilate(ero, kr, iterations=2)
+    #DIPLIB
+    dim =  dip.ColorSpaceManager.Convert(dil, 'grey')
+    bim = dim > 128
+    mea = dip.EdgeObjectsRemove(bim)
+    mea = dip.Label(bim, minSize=30)
+    m = dip.MeasurementTool.Measure(mea, dim, ['Size','SolidArea', 'Perimeter','Radius','Circularity'])
+    sel1 = ((m['Size'] > 1100))
+    sel1.Relabel()
+    ltclear = sel1.Apply(mea) 
+    #OPENCV
+    mask1 = np.array(ltclear).astype(np.uint8) * 255
+    kr3 =  cv2.getStructuringElement(cv2.MORPH_RECT, (3,3))
+    dila =  cv2.dilate(mask1, kr3,iterations=20)
+    inv = cv2.subtract(im, dila)
+    return inv
+
