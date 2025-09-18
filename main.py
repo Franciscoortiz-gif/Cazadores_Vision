@@ -1,94 +1,111 @@
 import cv2
 import numpy as np
-from skimage import exposure as ex
-from process import clearimage
-from process import clearobjects
-from process import detection, maskoutside
-from process import mask, findcenterbottle, findlettersoutside
-from PLC import processplc
-#Imagenes de la carpeta /im
-filenames = ['img/1.png', 'img/3.png', 'img/4.png', 'img/5.png'
-             , 'img/6.png']
+import mvsdk
+import platform
+from Filtros import filtros
 
-a = 0
-b = 0
+
+def main_loop():
+	# Enumerar cámaras
+	DevList = mvsdk.CameraEnumerateDevice()
+	print(DevList)
+	nDev = len(DevList)
+	if nDev < 1:
+		print("No camera was found!")
+		return
+
+	for i, DevInfo in enumerate(DevList):
+		print("{}: {} {}".format(i, DevInfo.GetFriendlyName(), DevInfo.GetPortType()))
+	i = 0 if nDev == 1 else int(input("Select camera: "))
+	DevInfo = DevList[i]
+	print(DevInfo)
+
+	#camara abierta
+	hCamera = 0
+	try:
+		hCamera = mvsdk.CameraInit(DevInfo, -1, -1)
+	except mvsdk.CameraException as e:
+		print("CameraInit Failed({}): {}".format(e.error_code, e.message) )
+		return
+
+	# Obtener descripción de la función de la cámara
+	cap = mvsdk.CameraGetCapability(hCamera)
+
+	# Determinar si es una cámara en blanco y negro o una cámara a color
+	monoCamera = (cap.sIspCapacity.bMonoSensor != 0)
+
+	# La cámara monocromática permite al ISP emitir directamente datos MONO 
+	# en lugar de expandirlos a una escala de grises de 24 bits de RGB.
+	if monoCamera:
+		mvsdk.CameraSetIspOutFormat(hCamera, mvsdk.CAMERA_MEDIA_TYPE_MONO8)
+	else:
+		mvsdk.CameraSetIspOutFormat(hCamera, mvsdk.CAMERA_MEDIA_TYPE_BGR8)
+
+	# Cambie el modo de la cámara a adquisición continua
+	mvsdk.CameraSetTriggerMode(hCamera, 0)
+
+	# 手Exposición dinámica, tiempo de exposición 30 ms
+
+
+	mvsdk.CameraSetAeState(hCamera, 0)
+	#mvsdk.CameraSetExposureTime(hCamera, 30 * 1000)
+
+	# Deje que el hilo de obtención de imágenes internas del SDK comience a funcionar
+	mvsdk.CameraPlay(hCamera)
+
+	# Calcular el tamaño requerido del búfer RGB, que se asigna directamente según la resolución máxima de la cámara
+	FrameBufferSize = cap.sResolutionRange.iWidthMax * cap.sResolutionRange.iHeightMax * (1 if monoCamera else 3)
+
+	# Asignar búfer RGB para almacenar la imagen de salida del ISP
+	# Nota: Los datos transmitidos desde la cámara a la PC son datos RAW, que se convierten a datos RGB mediante el software del ISP en la PC (si es una cámara en blanco y negro, no es necesario convertir el formato, pero el ISP tiene otro procesamiento, por lo que este búfer también debe asignarse)
+
+
+	pFrameBuffer = mvsdk.CameraAlignMalloc(FrameBufferSize, 16)
+
+	while (cv2.waitKey(1) & 0xFF) != ord('q'):
+		# Toma una fotografía con la cámara
+		try:
+			pRawData, FrameHead = mvsdk.CameraGetImageBuffer(hCamera, 200)
+			mvsdk.CameraImageProcess(hCamera, pRawData, pFrameBuffer, FrameHead)
+			mvsdk.CameraReleaseImageBuffer(hCamera, pRawData)
+
+			# Los datos de imagen obtenidos en Windows están invertidos y almacenados en formato BMP.
+			# Para convertirlos a OpenCV, es necesario invertirlos para corregirlos.
+			# Salida positiva directa en Linux, sin necesidad de subir y bajar
+			if platform.system() == "Windows":
+				mvsdk.CameraFlipFrameBuffer(pFrameBuffer, FrameHead, 1)
+			
+			# En este punto, la imagen se ha almacenado en pFrameBuffer. 
+			# Para una cámara a color, pFrameBuffer = datos RGB; para una cámara en blanco y negro, 
+			# pFrameBuffer = datos en escala de grises de 8 bits.
+			# Convierte pFrameBuffer al formato de imagen opencv para el posterior procesamiento del algoritmo
+
+
+			frame_data = (mvsdk.c_ubyte * FrameHead.uBytes).from_address(pFrameBuffer)
+			frame = np.frombuffer(frame_data, dtype=np.uint8)
+			frame = frame.reshape((FrameHead.iHeight, FrameHead.iWidth, 1 if FrameHead.uiMediaType == mvsdk.CAMERA_MEDIA_TYPE_MONO8 else 3) )
+
+			frame = cv2.resize(frame, (540,540), interpolation = cv2.INTER_LINEAR)
+			if frame is not None:
+				final = filtros(frame)
+				cv2.imshow('Detection', final)
+
+			
+		except mvsdk.CameraException as e:
+			if e.error_code != mvsdk.CAMERA_STATUS_TIME_OUT:
+				print("CameraGetImageBuffer failed({}): {}".format(e.error_code, e.message) )
+
+	# Apagar la cámara
+	mvsdk.CameraUnInit(hCamera)
+
+	# Liberar framebuffer
+	mvsdk.CameraAlignFree(pFrameBuffer)
 
 def main():
-    global a
-    cap = cv2.VideoCapture('/dev/video2')
-    
-    while True:
-        if cap is not None:
-            ret, frame = cap.read()
-            if ret == True:
-                im = contrastadjust(frame)
-                cl = clearimage(im)
-                maks = mask(cl)
-                outsid, cente =  clearobjects(maks)
-                outmask = maskoutside(cl)
-                centerr =  findcenterbottle(cente)
-                bottlelet = findlettersoutside(outsid)
-                dates =  cv2.add(centerr, bottlelet)
-                det, data = detection(dates)
-                processplc(data)
-                if cv2.waitKey(1) == ord('c'):
-                    a += 1
-                    cv2.imwrite('im/'+str(a)+'.png', frame)
-                    
-                cv2.imshow('camera', det)
-                
-                if cv2.waitKey(1) == ord('q'):
-                    cv2.destroyAllWindows()
-                    cap.release()
-                    break
-            else:
-                print('camera not readable')
-                readimages()
-                cap.release()
-                break
-                
+	try:
+		main_loop()
+	finally:
+		cv2.destroyAllWindows()
 
-        else:
-            print('camera not found')
-            break
-            
-            
-            
-def contrastadjust(imag):
-    im = imag.copy()
-    
-    gr = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
-    imsk = np.array(gr).astype(np.uint8)
-    im3 = ex.rescale_intensity(imsk, in_range=(44,209))
-    kernel = np.array([[0,-1, 0], [-1,5,-1], [0,-1,0]])
-    im4 = cv2.filter2D(im3, -1, kernel)
-    return im4
-   
+main()
 
-def readimages():
-    global b
-    for x in filenames:
-        img = cv2.imread(x)
-        if img is not None:
-            im = img.copy()
-            contrast = contrastadjust(im)
-            ima = clearimage(contrast)
-            im4 = mask(ima)
-            outmask =  maskoutside(ima)
-            center = clearobjects(im4)
-            outsi = clearobjects(outmask)
-            bottlecenter =  findcenterbottle(center)
-            bottleletters = findlettersoutside(outmask)
-            dates= cv2.add(bottlecenter, bottleletters)
-            im3, direction = detection(dates, im)
-            processplc(direction)
-            b += 1
-            #cv2.imwrite('im/'+str(b)+'.png', ima)
-            cv2.imshow('foto', im3)
-            cv2.waitKey(0)
-            cv2.destroyAllWindows()     
-            
-            
-            
-if __name__ == '__main__':
-    main()
