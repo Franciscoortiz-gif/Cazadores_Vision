@@ -3,18 +3,17 @@ import numpy as np
 from skimage import exposure as ex
 from process import clearimage
 from process import clearobjects
-from process import detection, maskoutside
-from process import mask, findcenterbottle, findlettersoutside
+from process import detection, increase_brightness
+from process import maskoutbottle, findlettersoutside
 from PLC import processplc
 #Imagenes de la carpeta /im
-filenames = ['img/1.png', 'img/3.png', 'img/4.png', 'img/5.png'
-             , 'img/6.png']
 
 a = 0
 b = 0
+c = 1
 
 def filtros(frame):
-    global a
+    global a,b
     
     if frame is not None:
         im = contrastadjust(frame)
@@ -41,31 +40,39 @@ def contrastadjust(imag):
     
     gr = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
     imsk = np.array(gr).astype(np.uint8)
-    im3 = ex.rescale_intensity(imsk, in_range=(44,209))
-    kernel = np.array([[0,-1, 0], [-1,5,-1], [0,-1,0]])
-    im4 = cv2.filter2D(im3, -1, kernel)
-    return im4
+    im3 = ex.rescale_intensity(imsk, in_range=(58,136))
+    th =  cv2.inRange(im3,30,70)
+    return th
    
 
 def readimages():
-    global b
-    for x in filenames:
-        img = cv2.imread(x)
+    global b, c
+
+    while True:
+        try:
+            img = cv2.imread('im/'+str(c)+'.png')
+        except:
+            pass
+        
         if img is not None:
             im = img.copy()
-            contrast = contrastadjust(im)
-            ima = clearimage(contrast)
-            im4 = mask(ima)
-            outmask =  maskoutside(ima)
-            center = clearobjects(im4)
-            outsi = clearobjects(outmask)
-            bottlecenter =  findcenterbottle(center)
-            bottleletters = findlettersoutside(outmask)
-            dates= cv2.add(bottlecenter, bottleletters)
-            im3, direction = detection(dates, im)
-            processplc(direction)
+            mask =  maskoutbottle(im)
+            brig = increase_brightness(mask, value=30)
+            contrast = contrastadjust(brig)
+            defition = clearobjects(contrast)
+            ima = clearimage(defition)
+            #outsi = clearobjects(outmask)
+            #bottlecenter =  findcenterbottle(center)
+            #bottleletters = findlettersoutside(outmask)
+            #dates= cv2.add(bottlecenter, bottleletters)
+            #im3, direction = detection(dates, im)
+            #processplc(direction)
             b += 1
-            #cv2.imwrite('im/'+str(b)+'.png', ima)
-            cv2.imshow('foto', im3)
+            #cv2.imwrite('images/'+str(b)+'.png', brig)
+            cv2.imshow('foto', ima)
             cv2.waitKey(0)
-            cv2.destroyAllWindows()     
+            cv2.destroyAllWindows()
+            c += 1
+        else:
+            break
+        

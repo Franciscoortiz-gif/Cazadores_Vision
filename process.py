@@ -5,67 +5,40 @@ import skimage.exposure as exposure
 
 a = 0
 
+def increase_brightness(img, value=30):
+    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+    h, s, v = cv2.split(hsv)
+
+    lim = 255 - value
+    v[v > lim] = 255
+    v[v <= lim] += value
+
+    final_hsv = cv2.merge((h, s, v))
+    img = cv2.cvtColor(final_hsv, cv2.COLOR_HSV2BGR)
+    return img
+
 def clearimage(img):
     im = img.copy()
-    ker = np.ones((9,9), np.uint8)
-    clea = cv2.morphologyEx(im, cv2.MORPH_TOPHAT, ker)
-    return clea
+    dp = np.array(im).astype(np.uint8)
+    gr = dip.ColorSpaceManager.Convert(dp, 'grey')
+    th = gr > 128
+    mea = dip.EdgeObjectsRemove(th)
+    mea = dip.Label(th, minSize=30)
+    m = dip.MeasurementTool.Measure(mea,gr,['Size'])
+    #print(m)
+    sel = ((m['Size'] < 2500)& (m['Size']>600))
+    measure = sel.Apply(mea)
+    ##Opencv
+    meas = np.array(measure).astype(np.uint8) * 255
+    return meas
 
 def clearobjects(imag):
     im = imag.copy()
-    im2 = exposure.rescale_intensity(im, (21,231))
-    #im2 = cv2.blur(im2, (3,3))
-    co = cv2.cvtColor(im2, cv2.COLOR_GRAY2BGR)
-    llab = cv2.cvtColor(co, cv2.COLOR_BGR2LAB)
-    l,a,b = cv2.split(llab)
-    clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(10,10))
-    lcha = clahe.apply(l)
-    con = cv2.merge((lcha,a,b))
-    im3 = cv2.cvtColor(con, cv2.COLOR_LAB2BGR)
-    gr = cv2.cvtColor(im3, cv2.COLOR_BGR2GRAY)
-    kern = cv2.getStructuringElement(cv2.MORPH_RECT, (2,2))
-    clean = cv2.erode(gr,kern, iterations=1)
-    blur = cv2.blur(clean, (3,3))
-    lis = cv2.inRange(blur, 30,255)
-    dil = cv2.dilate(lis, kern, iterations=5)
-    return dil
-
-def mask(img):
-    #OPENCV
-    im = img.copy()
-    res = exposure.rescale_intensity(im, (127,128))
-    ker = cv2.getStructuringElement(cv2.MORPH_RECT, (4,4))
-    ker2 = cv2.getStructuringElement(cv2.MORPH_RECT, (2,2))
-    ero = cv2.erode(res, ker2, iterations=1)
-    dil = cv2.dilate(ero, ker,iterations=9)
-    #DIPLIB
-    dpim =  np.asarray(dil).astype(np.uint8)
-    dim = dip.ColorSpaceManager.Convert(dpim, 'grey')
-    bni = dim > 128
-    mea = dip.EdgeObjectsRemove(bni)
-    mea = dip.Label(bni, minSize=30)
-    m = dip.MeasurementTool.Measure(mea, dim, ['Size','SolidArea', 'Perimeter','Radius','Circularity']) 
-    sel1 = ((m['Size'] > 4500) & (m['Size'] < 6800))
-    sel1.Relabel()
-    resul1 = sel1.Apply(mea)
-    #OPENCV
-    ope1 = np.array(resul1).astype(np.uint8) * 255
-    mas = cv2.bitwise_xor(dil, ope1)
-    #DIPLIB
-    dp = np.asarray(mas).astype(np.uint8)
-    imd = dip.ColorSpaceManager.Convert(dp,'grey')
-    biim =  imd > 128
-    man = dip.EdgeObjectsRemove(biim)
-    man = dip.Label(biim,minSize=30)
-    m2 = dip.MeasurementTool.Measure(man, imd, ['Size'])
-    se2 = (m2['Size'] > 900)
-    se2.Relabel()
-    final = se2.Apply(man)
-    #OPENCV
-    imop = np.array(final).astype(np.uint8) * 255
-    cleanmask = cv2.bitwise_and(im,im,mask=imop)
-    cleanimg =  cv2.bitwise_xor(im, cleanmask)
-    return cleanimg
+    ker = cv2.getStructuringElement(cv2.MORPH_RECT, (3,3))
+    ker2 = np.array((5,5)).astype(np.uint8)
+    ero = cv2.erode(im, ker2, iterations=1)
+    dila = cv2.dilate(ero, ker,iterations=3)
+    return dila
 
 def detection(imag, iman):
     global a
@@ -122,34 +95,15 @@ def detection(imag, iman):
     print(a,  result)
     return iman, result
 
-def findcenterbottle(img):
+def maskoutbottle(img):
     im = img.copy()
-    #DIPLIB
-    dpim = dip.ColorSpaceManager.Convert(im, 'grey')
-    binim =  dpim > 128
-    mea = dip.EdgeObjectsRemove(binim)
-    mea = dip.Label(binim, minSize=30)
-    m = dip.MeasurementTool.Measure(mea, dpim, ['Size','SolidArea', 'Perimeter','Radius'])
-    selec = ((m['Size'] > 1100)& (m['Size'] < 4500))
-    selec.Relabel()
-    cen =  selec.Apply(mea)
-    #OPENCV
-    center =  np.array(cen).astype(np.uint8) * 255
-    krn = cv2.getStructuringElement(cv2.MORPH_RECT, (5,5))
-    dil1 = cv2.dilate(center, krn, iterations=10)
-    #DIPLIB
-    dpim2 = dip.ColorSpaceManager.Convert(dil1, 'grey')
-    bim2 =  dpim2 > 128
-    me1 = dip.EdgeObjectsRemove(bim2)
-    me1 = dip.Label(bim2, minSize=30)
-    m1 = dip.MeasurementTool.Measure(me1, dpim2, ['Size','SolidArea', 'Perimeter','Radius'])
-    selec2 = ((m1['Perimeter'] > 400.0)& (m1['Perimeter'] < 700.0))
-    selec2.Relabel()
-    cen2 =  selec2.Apply(me1)
-    cntr =  np.array(cen2).astype(np.uint8) * 255
-    krn2 =  cv2.getStructuringElement(cv2.MORPH_RECT, (5,5))
-    cnero =  cv2.erode(cntr,krn2, iterations=10)
-    return cnero
+    gray =  cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+    filtro = exposure.rescale_intensity(gray,(70,123))
+    filtro = cv2.blur(filtro, (13,13))
+    filterimg = cv2.subtract(gray, filtro)
+    
+    color = cv2.cvtColor(filterimg, cv2.COLOR_GRAY2BGR) 
+    return color
 
 def findlettersoutside(img):
     im = img.copy()
@@ -188,27 +142,4 @@ def findlettersoutside(img):
     place =  lett3
     return place
     
-def maskoutside(img):
-    im = img.copy()
-    sharp =  exposure.rescale_intensity(im, (32,223))
-    th =  cv2.inRange(sharp, 30, 255)
-    kr =  cv2.getStructuringElement(cv2.MORPH_RECT, (5,5))
-    kr2 =  cv2.getStructuringElement(cv2.MORPH_RECT, (2,2))
-    ero = cv2.erode(th,kr2,iterations=1)
-    dil =  cv2.dilate(ero, kr, iterations=2)
-    #DIPLIB
-    dim =  dip.ColorSpaceManager.Convert(dil, 'grey')
-    bim = dim > 128
-    mea = dip.EdgeObjectsRemove(bim)
-    mea = dip.Label(bim, minSize=30)
-    m = dip.MeasurementTool.Measure(mea, dim, ['Size','SolidArea', 'Perimeter','Radius','Circularity'])
-    sel1 = ((m['Size'] > 1100))
-    sel1.Relabel()
-    ltclear = sel1.Apply(mea) 
-    #OPENCV
-    mask1 = np.array(ltclear).astype(np.uint8) * 255
-    kr3 =  cv2.getStructuringElement(cv2.MORPH_RECT, (3,3))
-    dila =  cv2.dilate(mask1, kr3,iterations=20)
-    inv = cv2.subtract(im, dila)
-    return inv
 

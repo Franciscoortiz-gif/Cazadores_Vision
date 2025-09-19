@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import mvsdk
 import platform
-from Filtros import filtros
+from Filtros import filtros, readimages
 
 
 def main_loop():
@@ -12,6 +12,7 @@ def main_loop():
 	nDev = len(DevList)
 	if nDev < 1:
 		print("No camera was found!")
+		readimages()
 		return
 
 	for i, DevInfo in enumerate(DevList):
@@ -89,6 +90,12 @@ def main_loop():
 			if frame is not None:
 				final = filtros(frame)
 				cv2.imshow('Detection', final)
+			else:
+				count = readimages()
+				if count > 23:
+					break
+				else:
+					pass
 
 			
 		except mvsdk.CameraException as e:
