@@ -4,7 +4,7 @@ from skimage import exposure as ex
 from process import clearimage
 from process import clearobjects
 from process import detection, increase_brightness
-from process import maskoutbottle, findlettersoutside
+from process import maskoutbottle, clearletters
 from PLC import processplc
 #Imagenes de la carpeta /im
 
@@ -39,9 +39,7 @@ def contrastadjust(imag):
     im = imag.copy()
     
     gr = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
-    imsk = np.array(gr).astype(np.uint8)
-    im3 = ex.rescale_intensity(imsk, in_range=(58,136))
-    th =  cv2.inRange(im3,30,70)
+    _, th =  cv2.threshold(gr, 67,255, cv2.THRESH_BINARY)
     return th
    
 
@@ -61,7 +59,7 @@ def readimages():
             contrast = contrastadjust(brig)
             defition = clearobjects(contrast)
             ima = clearimage(defition)
-            #outsi = clearobjects(outmask)
+            letters = clearletters(ima)
             #bottlecenter =  findcenterbottle(center)
             #bottleletters = findlettersoutside(outmask)
             #dates= cv2.add(bottlecenter, bottleletters)
@@ -69,7 +67,7 @@ def readimages():
             #processplc(direction)
             b += 1
             #cv2.imwrite('images/'+str(b)+'.png', brig)
-            cv2.imshow('foto', ima)
+            cv2.imshow('foto', letters)
             cv2.waitKey(0)
             cv2.destroyAllWindows()
             c += 1

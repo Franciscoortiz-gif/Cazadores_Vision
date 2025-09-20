@@ -105,41 +105,24 @@ def maskoutbottle(img):
     color = cv2.cvtColor(filterimg, cv2.COLOR_GRAY2BGR) 
     return color
 
-def findlettersoutside(img):
+def clearletters(img):
     im = img.copy()
-    krn = cv2.getStructuringElement(cv2.MORPH_RECT, (3,3))
-    res =  exposure.rescale_intensity(im, (38,231))
-    res2 =  exposure.rescale_intensity(im, (127,128))
-    dil = cv2.dilate(res2, krn, iterations=1)
-    resu = cv2.subtract(res, dil)
-    kernel = np.array([[0,-1, 0], [-1,5,-1], [0,-1,0]])
-    im4 = cv2.filter2D(resu, -1, kernel)
-    bn =  cv2.inRange(res, 38,100)
-    im2 =  cv2.dilate(bn, krn, iterations=10)
-    #DIPLIB Quitar objetos grandes y muy pequenos
-    imd = dip.ColorSpaceManager.Convert(im2, 'grey')
-    bim = imd > 128
-    mea = dip.EdgeObjectsRemove(bim)
-    mea = dip.Label(bim, minSize=30)
-    m = dip.MeasurementTool.Measure(mea, imd, ['Size','SolidArea', 'Perimeter','Convexity','Circularity'])
-    sel1 = ((m['Size'] > 4000))
-    sel1.Relabel()
-    resul1 = sel1.Apply(mea)
-    #OPENCV
-    lett = np.array(resul1).astype(np.uint8) * 255
-    lett = cv2.dilate(lett, krn, iterations=2)
-    imd2 = dip.ColorSpaceManager.Convert(lett, 'grey')
-    bim2 = imd2 > 128
-    mea2 = dip.EdgeObjectsRemove(bim2)
-    mea2 = dip.Label(bim2, minSize=30)
-    m2 = dip.MeasurementTool.Measure(mea2, imd2, ['Size','SolidArea', 'Perimeter','ConvexArea','Circularity'])
-    sel2 = ((m2['Size'] > 6000)& (m2['Perimeter'] > 470)& (m2['ConvexArea'] > 11300))
-    sel2.Relabel()
-    res2 = sel2.Apply(mea2)
-    #OPENCV
-    lett2 = np.array(res2).astype(np.uint8) * 255
-    lett3 = cv2.erode(lett2, krn, iterations=5)
-    place =  lett3
-    return place
+    dp = np.array(im).astype(np.uint8)
+    gr = dip.ColorSpaceManager.Convert(dp, 'grey')
+    th = gr > 128
+    lbl = dip.EdgeObjectsRemove(th)
+    lbl = dip.Label(th, minSize=30)
+    m = dip.MeasurementTool.Measure(lbl,gr,['Size', 'Perimeter'])
+    sel = ((m['Size'] > 600) & (m['Size'] < 1700) & (m['Perimeter']> 15)& (m['Perimeter']< 220) )
+    selc = sel.Apply(lbl)
+    a =  np.array(selc).astype(np.uint8) * 255
+    th2 =  a > 128
+    lbl1 = dip.EdgeObjectsRemove(th2)
+    lbl1 = dip.Label(th2, minSize= 30)
+    m2 = dip.MeasurementTool.Measure(lbl1, selc, ['Size','Perimeter'])
+    print(m2)
+    step1 = np.array(selc).astype(np.uint8) * 255
+    
+    return step1
     
 
