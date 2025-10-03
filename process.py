@@ -17,84 +17,6 @@ def increase_brightness(img, value=30):
     img = cv2.cvtColor(final_hsv, cv2.COLOR_HSV2BGR)
     return img
 
-def clearimage(img):
-    im = img.copy()
-    dp = np.array(im).astype(np.uint8)
-    gr = dip.ColorSpaceManager.Convert(dp, 'grey')
-    th = gr > 128
-    mea = dip.EdgeObjectsRemove(th)
-    mea = dip.Label(th, minSize=30)
-    m = dip.MeasurementTool.Measure(mea,gr,['Size'])
-    #print(m)
-    sel = ((m['Size'] < 2500)& (m['Size']>600))
-    measure = sel.Apply(mea)
-    ##Opencv
-    meas = np.array(measure).astype(np.uint8) * 255
-    return meas
-
-def clearobjects(imag):
-    im = imag.copy()
-    ker = cv2.getStructuringElement(cv2.MORPH_RECT, (3,3))
-    ker2 = np.array((5,5)).astype(np.uint8)
-    ero = cv2.erode(im, ker2, iterations=1)
-    dila = cv2.dilate(ero, ker,iterations=3)
-    return dila
-
-def detection(imag, iman):
-    global a
-    im = imag.copy()
-    positions =  []
-    im2 = cv2.resize(im, (840,520))
-    im3 = cv2.resize(iman, (840,520))
-    con, _ = cv2.findContours(im2, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    for cnt in con:
-        x,y,w,h = cv2.boundingRect(cnt)
-        frame = cv2.rectangle(im3, (x,y), (x+w,y+h), (255,255,0), 2)
-        #print(x,y,w,h)
-        positions.append(x)
-        positions.append(y)
-        
-    for i in range(0,4):
-        if(positions[i] > 380 and positions[i]<400):
-            if i == 0:
-                cnx = positions[i]
-                cny =  positions[i+1]
-                oux = positions[i+2]
-                ouy = positions[i+3]
-                break
-            else:
-                cnx = positions[i]
-                cny =  positions[i+1]
-                oux = positions[i-2]
-                ouy = positions[i-1]
-                break
-        else:
-            continue
-        
-    difx = cnx - oux
-    dify = cny - ouy
-    if difx < 0:
-        difx = difx * -1
-    else:
-        pass
-    if dify < 0:
-        dify = dify * -1
-    else:
-        pass
-    if difx > dify:
-        result = 1 #1 es derecha, 2 es abajo, 3 es izquierda, 4 es arriba
-    
-    if dify > difx:
-        result = 2
-
-    if a == 1:
-        result = 2 
-    if a == 2:
-        result = 2             
-    a += 1
-    print(a,  result)
-    return iman, result
-
 def maskoutbottle(img):
     im = img.copy()
     gray =  cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
@@ -105,24 +27,110 @@ def maskoutbottle(img):
     color = cv2.cvtColor(filterimg, cv2.COLOR_GRAY2BGR) 
     return color
 
-def clearletters(img):
-    im = img.copy()
-    dp = np.array(im).astype(np.uint8)
-    gr = dip.ColorSpaceManager.Convert(dp, 'grey')
-    th = gr > 128
-    lbl = dip.EdgeObjectsRemove(th)
-    lbl = dip.Label(th, minSize=30)
-    m = dip.MeasurementTool.Measure(lbl,gr,['Size', 'Perimeter'])
-    sel = ((m['Size'] > 600) & (m['Size'] < 1700) & (m['Perimeter']> 15)& (m['Perimeter']< 220) )
-    selc = sel.Apply(lbl)
-    a =  np.array(selc).astype(np.uint8) * 255
-    th2 =  a > 128
-    lbl1 = dip.EdgeObjectsRemove(th2)
-    lbl1 = dip.Label(th2, minSize= 30)
-    m2 = dip.MeasurementTool.Measure(lbl1, selc, ['Size','Perimeter'])
-    print(m2)
-    step1 = np.array(selc).astype(np.uint8) * 255
+def mask2(img):
+    im =img.copy()
+    fil = exposure.rescale_intensity(im, (61,104))
+    gr = cv2.cvtColor(fil, cv2.COLOR_BGR2GRAY)
+    th =  cv2.inRange(gr, 10, 255)
+    #DIPLIB
+    grd = dip.ColorSpaceManager.Convert(th, 'grey')
+    thd = grd > 128
+    mea = dip.EdgeObjectsRemove(thd)
+    mea = dip.Label(thd, minSize=30)
+    m = dip.MeasurementTool.Measure(mea,gr,['Size'])
+    sel = ((m['Size'] > 2500))
+    reac = sel.Apply(mea)
+    #OPENCV
+    op1 = np.array(reac).astype(np.uint8) * 255
+    inter = cv2.subtract(gr, op1)
+    th2 = cv2.inRange(inter,10,255)
+    ker1 = cv2.getStructuringElement(cv2.MORPH_RECT, (5,5))
+    ker2 = np.array((5,5)).astype(np.uint8)
+    ero = cv2.erode(th2, ker2, iterations=1)
+    dil = cv2.dilate(ero, ker1, iterations=5)
+    #DIPLIB
+    dpi =  dip.ColorSpaceManager.Convert(dil, 'grey')
+    thd2 = dpi > 128
+    mea2 = dip.EdgeObjectsRemove(thd2)
+    mea2 = dip.Label(thd2, minSize=30)
+    m2 = dip.MeasurementTool.Measure(mea2,dpi,['Size'])
+    sel2 = ((m2['Size'])< 5000)
+    re =  sel2.Apply(mea2)
+    ret = np.array(re).astype(np.uint8) * 255
+    casimsk = cv2.subtract(inter, ret)
+    ker3 = np.array([[-1,-1,-1], [-1,9,-1], [-1,-1,-1]])
+    shar = cv2.filter2D(casimsk, -1, ker3)
+    th3 = cv2.inRange(shar, 200, 255)
+    ker4 = cv2.getStructuringElement(cv2.MORPH_RECT, (3,3))
+    dil1 =  cv2.dilate(th3, ker4, iterations=5)
+    #DipLib
+    dp3 =  dip.ColorSpaceManager.Convert(dil1, 'grey')
+    thd3 = dp3 > 128
+    mea3 = dip.EdgeObjectsRemove(thd3)
+    mea3 = dip.Label(thd3, minSize=30)
+    m3 = dip.MeasurementTool.Measure(mea3,dp3,['Size'])
+    sel3 = ((m3['Size']< 2500))
+    re =  sel3.Apply(mea3)
+    res3 =  np.array(re).astype(np.uint8) * 255
+    msk3 =  cv2.subtract(casimsk, res3)
+    th4 = cv2.inRange(msk3, 200,240)
+    dil4 =  cv2.dilate(th4, ker4, iterations=15)
+    inf =  cv2.countNonZero(dil4)
+    #DIPLIB
+    if inf > 0:
+        dp5 = dip.ColorSpaceManager.Convert(dil4, 'grey')
+        thd5 = dp5 > 128
+        mea5 = dip.EdgeObjectsRemove(thd5)
+        mea5 = dip.Label(thd5, minSize=30)
+        m5 = dip.MeasurementTool.Measure(mea5,dp5,['Size'])
+        sel5 = ((m5['Size']> 5000))
+        re5 = sel5.Apply(mea5)
+        res5 = np.array(re5).astype(np.uint8) * 255
+    else:
+        res5 = dil4
     
-    return step1
-    
+    mskfin =  cv2.subtract(msk3, res5)
+    return mskfin
 
+def position(img, ori):
+    im = img.copy()
+    ker = np.array([[-1,-1,-1], [-1,9,-1], [-1,-1,-1]])
+    ker2 = np.array((5,5)).astype(np.uint8)
+    ker3 =  cv2.getStructuringElement(cv2.MORPH_RECT, (3,3))
+    shar = cv2.filter2D(im, -1, ker)
+    th = cv2.inRange(shar, 150, 255)
+    ero1 = cv2.erode(th, ker2, iterations=1)
+    dil1 = cv2.dilate(ero1, ker3, iterations=3)
+    #DipLib
+    dpi = dip.ColorSpaceManager.Convert(dil1, 'grey')
+    dth = dpi > 128
+    mea = dip.EdgeObjectsRemove(dth)
+    mea = dip.Label(dth, minSize=30)
+    m = dip.MeasurementTool.Measure(mea,dpi,['Size'])
+    sel = ((m['Size'] > 800))
+    reac = sel.Apply(mea)
+    opp = np.array(reac).astype(np.uint8) * 255
+    ker4 = np.ones((3,3), np.uint8)
+    trns = cv2.morphologyEx(opp, cv2.MORPH_CLOSE, ker4, iterations=1)
+    #DIPLIB
+    dpi2 = dip.ColorSpaceManager.Convert(trns, 'grey')
+    dth2 = dpi2 > 128
+    mea2 = dip.EdgeObjectsRemove(dth2)
+    mea2 = dip.Label(dth2, minSize=30)
+    m2 = dip.MeasurementTool.Measure(mea2,dpi2,['Perimeter','Roundness','P2A','EllipseVariance'])
+    sel2 = ((m2['SolidArea'] >1208) & (m2['SolidArea'] < 1550))
+    reac2 = sel2.Apply(mea2)
+    opp2 = np.array(reac2).astype(np.uint8) * 255
+    res1 = cv2.subtract(opp, opp2)
+    #DIPLIB
+    dpi3 = dip.ColorSpaceManager.Convert(res1, 'grey')
+    dth3 = dpi3 > 128
+    mea3 = dip.EdgeObjectsRemove(dth3)
+    mea3 = dip.Label(dth3, minSize=30)
+    m3 = dip.MeasurementTool.Measure(mea3,dpi3,['Perimeter','Roundness','P2A','EllipseVariance'])
+    sel3 = ((m3['SolidArea'] >1150)&(m3['SolidArea'] <1300)&(m3['Roundness']>0.3)
+            &(m3['EllipseVariance']> 0.2))
+    reac3 = sel3.Apply(mea3)
+    res3 = np.array(reac3).astype(np.uint8) * 255
+    ress = cv2.subtract(res1, res3) 
+    return ress

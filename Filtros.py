@@ -1,11 +1,10 @@
 import cv2
 import numpy as np
 from skimage import exposure as ex
-from process import clearimage
-from process import clearobjects
-from process import detection, increase_brightness
-from process import maskoutbottle, clearletters
+from process import increase_brightness
+from process import maskoutbottle,mask2, position
 from PLC import processplc
+from utils import processdetection
 #Imagenes de la carpeta /im
 
 a = 0
@@ -17,15 +16,7 @@ def filtros(frame):
     
     if frame is not None:
         im = contrastadjust(frame)
-        #cl = clearimage(im)
-        #maks = mask(cl)
-        #outsid, cente =  clearobjects(maks)
-        #outmask = maskoutside(cl)
-        #centerr =  findcenterbottle(cente)
-        #bottlelet = findlettersoutside(outsid)
-        #dates =  cv2.add(centerr, bottlelet)
-        #det, data = detection(dates)
-        #processplc(data)
+
         if cv2.waitKey(1) == ord('c'):
             a += 1
             cv2.imwrite('im/'+str(a)+'.png', frame)
@@ -54,22 +45,17 @@ def readimages():
         
         if img is not None:
             im = img.copy()
+            imori1 =  img.copy()
             mask =  maskoutbottle(im)
             brig = increase_brightness(mask, value=30)
-            contrast = contrastadjust(brig)
-            defition = clearobjects(contrast)
-            ima = clearimage(defition)
-            letters = clearletters(ima)
-            #bottlecenter =  findcenterbottle(center)
-            #bottleletters = findlettersoutside(outmask)
-            #dates= cv2.add(bottlecenter, bottleletters)
-            #im3, direction = detection(dates, im)
-            #processplc(direction)
+            msk2 = mask2(brig)
+            objects = position(msk2, im)
+            drawc, Angle = processdetection(objects, imori1)
+            processplc(Angle)
             b += 1
             #cv2.imwrite('images/'+str(b)+'.png', brig)
-            cv2.imshow('foto', letters)
+            cv2.imshow('foto', drawc)
             cv2.waitKey(0)
-            cv2.destroyAllWindows()
             c += 1
         else:
             break
