@@ -89,6 +89,7 @@ def main_loop():
 			frame = cv2.resize(frame, (540,540), interpolation = cv2.INTER_LINEAR)
 			if frame is not None:
 				final = filtros(frame)
+				cv2.imshow('Camera',frame)
 				cv2.imshow('Detection', final)
 			else:
 				count = readimages()

@@ -10,6 +10,8 @@ def processdetection(mask, ori):
     global isver, ishor, size, Angle
     im =  mask.copy()
     out1 =  ori.copy()
+    if len(im.shape) != 1:
+        return im, 0
     isver = {}
     ishor = {}
     Angle = {"Angle": 0}

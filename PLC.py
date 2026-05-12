@@ -18,7 +18,7 @@ def init():
         comm.mode = mb.MODE_ASCII  
         #port  = sr.Serial(port='/dev/ttyUSB0', baudrate=9600, bytesize=7,timeout=2, parity=sr.PARITY_EVEN, stopbits=sr.STOPBITS_ONE)
     except:
-        print("Communication Failed")
+        #print("Communication Failed")
         error = True
 def processplc(data):
     init()

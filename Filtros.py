@@ -15,7 +15,14 @@ def filtros(frame):
     global a,b
     
     if frame is not None:
-        im = contrastadjust(frame)
+        imori1 = frame.copy()
+        mask =  maskoutbottle(frame)
+        brig = increase_brightness(mask, value=30)
+        msk2 = mask2(brig)
+        objects = position(msk2, frame)
+        drawc, Angle = processdetection(objects, imori1)
+        im = drawc.copy()
+        processplc(Angle)
 
         if cv2.waitKey(1) == ord('c'):
             a += 1

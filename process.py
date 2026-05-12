@@ -37,8 +37,12 @@ def mask2(img):
     thd = grd > 128
     mea = dip.EdgeObjectsRemove(thd)
     mea = dip.Label(thd, minSize=30)
+    if dip.Maximum(mea)[0] == 0:
+        return im
     m = dip.MeasurementTool.Measure(mea,gr,['Size'])
-    sel = ((m['Size'] > 2500))
+    if m.NumberOfObjects() == 0:
+        return im
+    sel = m['Size'] > 2500
     reac = sel.Apply(mea)
     #OPENCV
     op1 = np.array(reac).astype(np.uint8) * 255
@@ -54,6 +58,8 @@ def mask2(img):
     mea2 = dip.EdgeObjectsRemove(thd2)
     mea2 = dip.Label(thd2, minSize=30)
     m2 = dip.MeasurementTool.Measure(mea2,dpi,['Size'])
+    if m2.NumberOfObjects() == 0:
+        return im
     sel2 = ((m2['Size'])< 5000)
     re =  sel2.Apply(mea2)
     ret = np.array(re).astype(np.uint8) * 255
@@ -69,6 +75,8 @@ def mask2(img):
     mea3 = dip.EdgeObjectsRemove(thd3)
     mea3 = dip.Label(thd3, minSize=30)
     m3 = dip.MeasurementTool.Measure(mea3,dp3,['Size'])
+    if m3.NumberOfObjects() == 0:
+        return im
     sel3 = ((m3['Size']< 2500))
     re =  sel3.Apply(mea3)
     res3 =  np.array(re).astype(np.uint8) * 255
@@ -93,44 +101,49 @@ def mask2(img):
     return mskfin
 
 def position(img, ori):
-    im = img.copy()
-    ker = np.array([[-1,-1,-1], [-1,9,-1], [-1,-1,-1]])
-    ker2 = np.array((5,5)).astype(np.uint8)
-    ker3 =  cv2.getStructuringElement(cv2.MORPH_RECT, (3,3))
-    shar = cv2.filter2D(im, -1, ker)
-    th = cv2.inRange(shar, 150, 255)
-    ero1 = cv2.erode(th, ker2, iterations=1)
-    dil1 = cv2.dilate(ero1, ker3, iterations=3)
-    #DipLib
-    dpi = dip.ColorSpaceManager.Convert(dil1, 'grey')
-    dth = dpi > 128
-    mea = dip.EdgeObjectsRemove(dth)
-    mea = dip.Label(dth, minSize=30)
-    m = dip.MeasurementTool.Measure(mea,dpi,['Size'])
-    sel = ((m['Size'] > 800))
-    reac = sel.Apply(mea)
-    opp = np.array(reac).astype(np.uint8) * 255
-    ker4 = np.ones((3,3), np.uint8)
-    trns = cv2.morphologyEx(opp, cv2.MORPH_CLOSE, ker4, iterations=1)
-    #DIPLIB
-    dpi2 = dip.ColorSpaceManager.Convert(trns, 'grey')
-    dth2 = dpi2 > 128
-    mea2 = dip.EdgeObjectsRemove(dth2)
-    mea2 = dip.Label(dth2, minSize=30)
-    m2 = dip.MeasurementTool.Measure(mea2,dpi2,['Perimeter','Roundness','P2A','EllipseVariance'])
-    sel2 = ((m2['SolidArea'] >1208) & (m2['SolidArea'] < 1550))
-    reac2 = sel2.Apply(mea2)
-    opp2 = np.array(reac2).astype(np.uint8) * 255
-    res1 = cv2.subtract(opp, opp2)
-    #DIPLIB
-    dpi3 = dip.ColorSpaceManager.Convert(res1, 'grey')
-    dth3 = dpi3 > 128
-    mea3 = dip.EdgeObjectsRemove(dth3)
-    mea3 = dip.Label(dth3, minSize=30)
-    m3 = dip.MeasurementTool.Measure(mea3,dpi3,['Perimeter','Roundness','P2A','EllipseVariance'])
-    sel3 = ((m3['SolidArea'] >1150)&(m3['SolidArea'] <1300)&(m3['Roundness']>0.3)
-            &(m3['EllipseVariance']> 0.2))
-    reac3 = sel3.Apply(mea3)
-    res3 = np.array(reac3).astype(np.uint8) * 255
-    ress = cv2.subtract(res1, res3) 
-    return ress
+    try:
+        im = img.copy()
+        ker = np.array([[-1,-1,-1], [-1,9,-1], [-1,-1,-1]])
+        ker2 = np.array((5,5)).astype(np.uint8)
+        ker3 =  cv2.getStructuringElement(cv2.MORPH_RECT, (3,3))
+        shar = cv2.filter2D(im, -1, ker)
+        th = cv2.inRange(shar, 150, 255)
+        ero1 = cv2.erode(th, ker2, iterations=1)
+        dil1 = cv2.dilate(ero1, ker3, iterations=3)
+        #DipLib
+        dpi = dip.ColorSpaceManager.Convert(dil1, 'grey')
+        dth = dpi > 128
+        mea = dip.EdgeObjectsRemove(dth)
+        mea = dip.Label(dth, minSize=30)
+        m = dip.MeasurementTool.Measure(mea,dpi,['Size'])
+        if m.NumberOfObjects() == 0:
+            return im
+        sel = ((m['Size'] > 800))
+        reac = sel.Apply(mea)
+        opp = np.array(reac).astype(np.uint8) * 255
+        ker4 = np.ones((3,3), np.uint8)
+        trns = cv2.morphologyEx(opp, cv2.MORPH_CLOSE, ker4, iterations=1)
+        #DIPLIB
+        dpi2 = dip.ColorSpaceManager.Convert(trns, 'grey')
+        dth2 = dpi2 > 128
+        mea2 = dip.EdgeObjectsRemove(dth2)
+        mea2 = dip.Label(dth2, minSize=30)
+        m2 = dip.MeasurementTool.Measure(mea2,dpi2,['Perimeter','Roundness','P2A','EllipseVariance'])
+        sel2 = ((m2['SolidArea'] >1208) & (m2['SolidArea'] < 1550))
+        reac2 = sel2.Apply(mea2)
+        opp2 = np.array(reac2).astype(np.uint8) * 255
+        res1 = cv2.subtract(opp, opp2)
+        #DIPLIB
+        dpi3 = dip.ColorSpaceManager.Convert(res1, 'grey')
+        dth3 = dpi3 > 128
+        mea3 = dip.EdgeObjectsRemove(dth3)
+        mea3 = dip.Label(dth3, minSize=30)
+        m3 = dip.MeasurementTool.Measure(mea3,dpi3,['Perimeter','Roundness','P2A','EllipseVariance'])
+        sel3 = ((m3['SolidArea'] >1150)&(m3['SolidArea'] <1300)&(m3['Roundness']>0.3)
+                &(m3['EllipseVariance']> 0.2))
+        reac3 = sel3.Apply(mea3)
+        res3 = np.array(reac3).astype(np.uint8) * 255
+        ress = cv2.subtract(res1, res3) 
+        return ress
+    except:
+        return img
