@@ -6,5 +6,5 @@ CXX_DEFINES =
 
 CXX_INCLUDES = -I"/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/includes" -isystem /usr/include/opencv4
 
-CXX_FLAGS = -Wall -Wextra -O3 -std=gnu++23
+CXX_FLAGS = -O3 -DNDEBUG -Wall -Wextra -O3 -std=gnu++23
 

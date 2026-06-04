@@ -1,3 +1,0 @@
-/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/build/CMakeFiles/Cazadores_vision.dir
-/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/build/CMakeFiles/edit_cache.dir
-/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/build/CMakeFiles/rebuild_cache.dir

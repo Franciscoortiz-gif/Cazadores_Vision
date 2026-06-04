@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <cmath>
 
 struct image_adjuster{
     cv::Mat img;
@@ -10,6 +11,6 @@ struct image_adjuster{
     int max = 255;
 };
 
-void process_image(cv::Mat& img);
+cv::Mat process_image(cv::Mat& img);
 
 void adjust_brigness_and_contrast(int, void* userdata);

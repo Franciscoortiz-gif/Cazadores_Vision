@@ -57,7 +57,7 @@ EQUALS = =
 CMAKE_SOURCE_DIR = "/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c"
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = "/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/build"
+CMAKE_BINARY_DIR = "/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/Release"
 
 #=============================================================================
 # Directory level rules for the build root directory
@@ -81,14 +81,14 @@ clean: CMakeFiles/Cazadores_vision.dir/clean
 CMakeFiles/Cazadores_vision.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Cazadores_vision.dir/build.make CMakeFiles/Cazadores_vision.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Cazadores_vision.dir/build.make CMakeFiles/Cazadores_vision.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir="/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/build/CMakeFiles" --progress-num=1,2 "Built target Cazadores_vision"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir="/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/Release/CMakeFiles" --progress-num=1,2 "Built target Cazadores_vision"
 .PHONY : CMakeFiles/Cazadores_vision.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/Cazadores_vision.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start "/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/build/CMakeFiles" 2
+	$(CMAKE_COMMAND) -E cmake_progress_start "/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/Release/CMakeFiles" 2
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/Cazadores_vision.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start "/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/build/CMakeFiles" 0
+	$(CMAKE_COMMAND) -E cmake_progress_start "/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/Release/CMakeFiles" 0
 .PHONY : CMakeFiles/Cazadores_vision.dir/rule
 
 # Convenience name for target.

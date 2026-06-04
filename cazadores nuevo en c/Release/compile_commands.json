@@ -1,0 +1,7 @@
+[
+{
+  "directory": "/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/Release",
+  "command": "clang++-23  -I\"/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/includes\" -isystem /usr/include/opencv4 -O3 -DNDEBUG -Wall -Wextra -O3 -std=gnu++23 -o CMakeFiles/Cazadores_vision.dir/src/cazadores.cpp.o -c \"/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/src/cazadores.cpp\"",
+  "file": "/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/src/cazadores.cpp"
+}
+]
