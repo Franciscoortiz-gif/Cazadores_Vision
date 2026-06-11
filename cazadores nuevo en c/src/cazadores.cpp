@@ -1,8 +1,20 @@
-#include "cazadores.hpp"
 #include <opencv2/core.hpp>
 #include <opencv2/core/mat.hpp>
+#include <opencv2/core/matx.hpp>
+#include <opencv2/core/types.hpp>
 #include <opencv2/highgui.hpp>
+#include <opencv2/imgproc.hpp>
+#include <opencv2/photo.hpp>
 #include <vector>
+#include <iostream>
+#include <string>
+
+struct image_adjuster{
+    cv::Mat img;
+    cv::Mat out;
+    int min = 0;
+    int max = 255;
+};
 
 void adjust_brigness_and_contrast(int, void* userdata){
     image_adjuster* data = static_cast<image_adjuster*>(userdata);
@@ -134,73 +146,96 @@ cv::Mat bandpass_filter(const cv::Mat& src, double max, double min, int suppresS
 
     return final8U;
 }
-/*void debug(){
-    image_adjuster data;
-    std::vector<std::string> path_im = {"im/1.png","im/2.png","im/3.png","im/im0.png"};
-    std::vector<cv::Mat> imgs;
-    for(size_t i=0; i < path_im.size(); i++){
-        cv::Mat img = cv::imread("im/1.png", 0);
-        cv::resize(img, img,cv::Size(540,540));
-        imgs.push_back(img); 
-    }
-    for(size_t j=0;j<imgs.size();j++){
-        data.img = imgs[j];
-        if(data.img.empty()){
-            std::cout<<"Fallo al cargar la imagen"<<std::endl;` 
-            return;
+
+int determine_angle(cv::Rect cord, cv::Mat& img){
+    std::cout << img.rows << std::endl;
+    std::cout << img.cols << std::endl;
+    std::cout << "[ x:" << cord.x << ", y:" << cord.y << ", w:" << cord.width << ", h:" << cord.height << "]" << std::endl;
+    cv::Point center(0,0);
+    if(cord.width > cord.height){
+        //esta hotizontal
+        center.x = img.cols / 2;
+        center.y = img.rows / 2;
+        std::cout << "Horizontal" <<center << std::endl;
+        if(cord.y > center.y){
+            return 0;
+        }else{
+            return 180;
         }
-        data.min = 65;
-        data.max = 135;
-        adjust_brigness_and_contrast(0, &data);
-        process_image(data.out);
-        cv::imshow("Cazadores" + std::to_string(j),data.out);
-        cv::waitKey(0);
+    }else{
+        //esta vertical
+        center.x = img.cols / 2;
+        center.y = img.rows / 2;
+        std::cout <<"Vertical"<< center << std::endl;
+        if(cord.x > center.x){
+            return 90;
+        }else{
+            return 270;
+        }
     }
-}*/
-
-/*void debug(){
-    cv::Mat img = cv::imread("im/im0.png");
-    if(img.empty())return;
-    cv::Mat gamma_adj = gamma(img,9.75);
-    cv::Mat sh1 = sharp(gamma_adj);
-    cv::Mat ush1 = unsharp_mask(sh1,4.0,0.60);
-    cv::Mat hsv;
-    cv::cvtColor(ush1,hsv,cv::COLOR_BGR2BGRA);
-    std::vector<cv::Mat> channels;
-    cv::split(img,channels);
-    cv::Mat bin;
-    cv::bitwise_not(channels[1],bin);
-    image_adjuster data;
-    data.img = bin;
-    data.min = 220;
-    data.max = 253;
-    adjust_brigness_and_contrast(0,&data);
-    cv::Mat binary;
-    binary = process_image(data.out);
-    cv::imshow("Gamma", gamma_adj);
-    cv::imshow("Sharpness", sh1);
-    cv::imshow("UnSharpness", ush1);
-    cv::imshow("UnSharpness B", channels[0]);
-    cv::imshow("UnSharpness G", channels[1]);
-    cv::imshow("UnSharpness R", channels[2]);
-    //cv::imshow("UnSharpness A", channels[3]);
-    cv::imshow("TH", binary);
-    //cv::imshow("Band Filetered", bandFiltered);
-    //cv::imshow("Sharpness2", sh2);
-    //cv::imshow("Denoise", s);
-    cv::waitKey(0);
-    cv::destroyAllWindows();
-
-}*/
+    cv::circle(img,center,10,cv::Scalar(255,255,0),cv::FILLED);
+}
 
 void debug(){
+    cv::Rect cord;
+    std::vector<std::vector<cv::Point>> as;
+    cv::Mat bin;
     cv::Mat src = cv::imread("im/im0.png");
+    //cv::rotate(src,src, cv::ROTATE_90_CLOCKWISE);    
+    //cv::rotate(src,src, cv::ROTATE_180);
+    cv::Mat xnt = cv::Mat::zeros(src.size(), CV_8UC3);
     std::vector<cv::Mat> ch;
     cv::split(src,ch);
-    ch[0] = gamma(ch[0],1.75);
-    cv::imshow("Channel B", ch[0]);    
-    cv::imshow("Channel G", ch[1]);
-    cv::imshow("Channel R", ch[2]);
+    cv::Mat fin = gamma(ch[2],6.75);
+    fin = sharp(fin);
+    fin = unsharp_mask(fin,4.0,0.60);
+    cv::blur(fin, fin, cv::Size(2,2));
+    cv::inRange(fin, 160, 255, fin);
+    cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(21,21));
+    cv::morphologyEx(fin, fin, cv::MORPH_CLOSE,kernel);
+    cv::morphologyEx(fin,fin,cv::MORPH_ERODE,cv::getStructuringElement(cv::MORPH_RECT,cv::Size(7,7)));
+    std::vector<std::vector<cv::Point>> cont;
+    std::vector<cv::Vec4i> hera;
+    cv::findContours(fin,cont,hera, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+    cv::Rect glob;
+    std::vector<std::vector<cv::Point>> fconts;
+    bool first = false;
+    for(const auto& co : cont){
+        
+        double area = cv::contourArea(co);
+        
+        if(area > 5000.0 && area < 10000.0){
+                fconts.push_back(co);
+                cv::Rect oner = cv::boundingRect(co);
+                if(!first){
+                    glob = oner;
+                    first = true;
+                }else{
+                    glob = glob | oner;
+                }
+            }
+    }
+    if (glob.width > 0 && glob.height > 0) {
+        int padding = 10;
+        glob.x = std::max(0, glob.x - padding);
+        glob.y = std::max(0, glob.y - padding);
+        glob.width = std::min(src.cols - glob.x, glob.width + (padding * 2));
+        glob.height = std::min(src.rows - glob.y, glob.height+ (padding * 2));}
+    cv::drawContours(xnt, fconts,-1, cv::Scalar(255,255,255),cv::FILLED);
+    //xnt = xnt(glob); 
+    for(const auto& c : fconts){
+        double a = cv::contourArea(c);
+        std::cout << "area" << a <<std::endl;
+        if(a < 6000.0 && a > 5000){
+            cord = cv::boundingRect(c);
+            cv::circle(xnt, cv::Point(cord.x + (cord.width / 2),cord.y + (cord.height /2)), 3,cv::Scalar(0,255,0), 2);
+        }
+    } 
+    int angle = determine_angle(cord,xnt);
+    std::cout << "Angle of bottle" << angle << std::endl;
+    std::string text = "Rotacion de la botella " + std::to_string(angle) + " grados";
+    cv::putText(src,text,cv::Point(100,100),cv::FONT_HERSHEY_COMPLEX,1.2,cv::Scalar(155,255,0),3);
+    cv::imshow("Channel XNT", src);
     cv::waitKey(0);
 }
 

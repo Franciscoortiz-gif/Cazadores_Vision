@@ -129,6 +129,19 @@ Cazadores_vision/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Cazadores_vision.dir/build.make CMakeFiles/Cazadores_vision.dir/build
 .PHONY : Cazadores_vision/fast
 
+#=============================================================================
+# Target rules for targets named fmt
+
+# Build rule for target.
+fmt: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 fmt
+.PHONY : fmt
+
+# fast build rule for target.
+fmt/fast:
+	$(MAKE) $(MAKESILENT) -f 3rdparty/fmt/CMakeFiles/fmt.dir/build.make 3rdparty/fmt/CMakeFiles/fmt.dir/build
+.PHONY : fmt/fast
+
 src/cazadores.o: src/cazadores.cpp.o
 .PHONY : src/cazadores.o
 
@@ -162,6 +175,7 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... Cazadores_vision"
+	@echo "... fmt"
 	@echo "... src/cazadores.o"
 	@echo "... src/cazadores.i"
 	@echo "... src/cazadores.s"

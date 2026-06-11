@@ -64,21 +64,38 @@ CMAKE_BINARY_DIR = "/home/francisco/Documentos/000Proyectos/Cazadores_Vision/caz
 
 # The main recursive "all" target.
 all: CMakeFiles/Cazadores_vision.dir/all
+all: 3rdparty/fmt/all
 .PHONY : all
 
 # The main recursive "preinstall" target.
-preinstall:
+preinstall: 3rdparty/fmt/preinstall
 .PHONY : preinstall
 
 # The main recursive "clean" target.
 clean: CMakeFiles/Cazadores_vision.dir/clean
+clean: 3rdparty/fmt/clean
 .PHONY : clean
+
+#=============================================================================
+# Directory level rules for directory 3rdparty/fmt
+
+# Recursive "all" directory target.
+3rdparty/fmt/all: 3rdparty/fmt/CMakeFiles/fmt.dir/all
+.PHONY : 3rdparty/fmt/all
+
+# Recursive "preinstall" directory target.
+3rdparty/fmt/preinstall:
+.PHONY : 3rdparty/fmt/preinstall
+
+# Recursive "clean" directory target.
+3rdparty/fmt/clean: 3rdparty/fmt/CMakeFiles/fmt.dir/clean
+.PHONY : 3rdparty/fmt/clean
 
 #=============================================================================
 # Target rules for target CMakeFiles/Cazadores_vision.dir
 
 # All Build rule for target.
-CMakeFiles/Cazadores_vision.dir/all:
+CMakeFiles/Cazadores_vision.dir/all: 3rdparty/fmt/CMakeFiles/fmt.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Cazadores_vision.dir/build.make CMakeFiles/Cazadores_vision.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Cazadores_vision.dir/build.make CMakeFiles/Cazadores_vision.dir/build
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir="/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/Release/CMakeFiles" --progress-num=1,2 "Built target Cazadores_vision"
@@ -86,7 +103,7 @@ CMakeFiles/Cazadores_vision.dir/all:
 
 # Build rule for subdir invocation for target.
 CMakeFiles/Cazadores_vision.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start "/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/Release/CMakeFiles" 2
+	$(CMAKE_COMMAND) -E cmake_progress_start "/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/Release/CMakeFiles" 5
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/Cazadores_vision.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start "/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/Release/CMakeFiles" 0
 .PHONY : CMakeFiles/Cazadores_vision.dir/rule
@@ -99,6 +116,32 @@ Cazadores_vision: CMakeFiles/Cazadores_vision.dir/rule
 CMakeFiles/Cazadores_vision.dir/clean:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Cazadores_vision.dir/build.make CMakeFiles/Cazadores_vision.dir/clean
 .PHONY : CMakeFiles/Cazadores_vision.dir/clean
+
+#=============================================================================
+# Target rules for target 3rdparty/fmt/CMakeFiles/fmt.dir
+
+# All Build rule for target.
+3rdparty/fmt/CMakeFiles/fmt.dir/all:
+	$(MAKE) $(MAKESILENT) -f 3rdparty/fmt/CMakeFiles/fmt.dir/build.make 3rdparty/fmt/CMakeFiles/fmt.dir/depend
+	$(MAKE) $(MAKESILENT) -f 3rdparty/fmt/CMakeFiles/fmt.dir/build.make 3rdparty/fmt/CMakeFiles/fmt.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir="/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/Release/CMakeFiles" --progress-num=3,4,5 "Built target fmt"
+.PHONY : 3rdparty/fmt/CMakeFiles/fmt.dir/all
+
+# Build rule for subdir invocation for target.
+3rdparty/fmt/CMakeFiles/fmt.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start "/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/Release/CMakeFiles" 3
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 3rdparty/fmt/CMakeFiles/fmt.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start "/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/Release/CMakeFiles" 0
+.PHONY : 3rdparty/fmt/CMakeFiles/fmt.dir/rule
+
+# Convenience name for target.
+fmt: 3rdparty/fmt/CMakeFiles/fmt.dir/rule
+.PHONY : fmt
+
+# clean rule for target.
+3rdparty/fmt/CMakeFiles/fmt.dir/clean:
+	$(MAKE) $(MAKESILENT) -f 3rdparty/fmt/CMakeFiles/fmt.dir/build.make 3rdparty/fmt/CMakeFiles/fmt.dir/clean
+.PHONY : 3rdparty/fmt/CMakeFiles/fmt.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

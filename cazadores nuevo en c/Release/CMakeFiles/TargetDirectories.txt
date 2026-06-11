@@ -1,3 +1,6 @@
 /home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/Release/CMakeFiles/Cazadores_vision.dir
 /home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/Release/CMakeFiles/edit_cache.dir
 /home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/Release/CMakeFiles/rebuild_cache.dir
+/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/Release/3rdparty/fmt/CMakeFiles/fmt.dir
+/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/Release/3rdparty/fmt/CMakeFiles/edit_cache.dir
+/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/Release/3rdparty/fmt/CMakeFiles/rebuild_cache.dir
