@@ -1,17 +1,12 @@
 [
 {
   "directory": "/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/Release",
-  "command": "/usr/bin/c++  -I\"/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/includes\" -I\"/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/3rdparty/fmt/include\" -isystem /usr/include/opencv4 -O3 -DNDEBUG -std=gnu++23 -o CMakeFiles/Cazadores_vision.dir/src/cazadores.cpp.o -c \"/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/src/cazadores.cpp\"",
+  "command": "/usr/bin/c++ -DASIO_NO_DEPRECATED -DASIO_STANDALONE -I\"/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/includes\" -I\"/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/3rdparty/Crow/include\" -isystem \"/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/3rdparty/asio/include\" -isystem /usr/include/opencv4 -O3 -DNDEBUG -std=gnu++23 -o CMakeFiles/Cazadores_vision.dir/src/cazadores.cpp.o -c \"/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/src/cazadores.cpp\"",
   "file": "/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/src/cazadores.cpp"
 },
 {
-  "directory": "/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/Release/3rdparty/fmt",
-  "command": "/usr/bin/c++  -I\"/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/3rdparty/fmt/include\" -O3 -DNDEBUG -std=gnu++23 -o CMakeFiles/fmt.dir/src/format.cc.o -c \"/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/3rdparty/fmt/src/format.cc\"",
-  "file": "/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/3rdparty/fmt/src/format.cc"
-},
-{
-  "directory": "/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/Release/3rdparty/fmt",
-  "command": "/usr/bin/c++  -I\"/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/3rdparty/fmt/include\" -O3 -DNDEBUG -std=gnu++23 -o CMakeFiles/fmt.dir/src/os.cc.o -c \"/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/3rdparty/fmt/src/os.cc\"",
-  "file": "/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/3rdparty/fmt/src/os.cc"
+  "directory": "/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/Release",
+  "command": "/usr/bin/c++ -DASIO_NO_DEPRECATED -DASIO_STANDALONE -I\"/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/includes\" -I\"/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/3rdparty/Crow/include\" -isystem \"/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/3rdparty/asio/include\" -isystem /usr/include/opencv4 -O3 -DNDEBUG -std=gnu++23 -o CMakeFiles/Cazadores_vision.dir/src/Read_Camera.cpp.o -c \"/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/src/Read_Camera.cpp\"",
+  "file": "/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/src/Read_Camera.cpp"
 }
 ]

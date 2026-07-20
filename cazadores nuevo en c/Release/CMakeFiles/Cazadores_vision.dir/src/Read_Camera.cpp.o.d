@@ -1,6 +1,9 @@
-CMakeFiles/Cazadores_vision.dir/src/cazadores.cpp.o: \
- /home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores\ nuevo\ en\ c/src/cazadores.cpp \
+CMakeFiles/Cazadores_vision.dir/src/Read_Camera.cpp.o: \
+ /home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores\ nuevo\ en\ c/src/Read_Camera.cpp \
  /usr/include/stdc-predef.h \
+ /home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores\ nuevo\ en\ c/includes/CameraApi.h \
+ /home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores\ nuevo\ en\ c/includes/CameraDefine.h \
+ /home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores\ nuevo\ en\ c/includes/CameraStatus.h \
  /home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores\ nuevo\ en\ c/includes/cazadores.hpp \
  /usr/include/c++/11/iostream \
  /usr/include/x86_64-linux-gnu/c++/11/bits/c++config.h \
@@ -391,8 +394,6 @@ CMakeFiles/Cazadores_vision.dir/src/cazadores.cpp.o: \
  /usr/include/opencv4/opencv2/video/tracking.hpp \
  /usr/include/opencv4/opencv2/video/background_segm.hpp \
  /home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores\ nuevo\ en\ c/includes/CameraApi.h \
- /home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores\ nuevo\ en\ c/includes/CameraDefine.h \
- /home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores\ nuevo\ en\ c/includes/CameraStatus.h \
  /home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores\ nuevo\ en\ c/3rdparty/Crow/include/crow.h \
  /home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores\ nuevo\ en\ c/3rdparty/Crow/include/crow/query_string.h \
  /home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores\ nuevo\ en\ c/3rdparty/Crow/include/crow/http_parser_merged.h \

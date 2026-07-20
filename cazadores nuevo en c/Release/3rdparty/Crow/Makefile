@@ -68,7 +68,7 @@ CMAKE_BINARY_DIR = "/home/francisco/Documentos/000Proyectos/Cazadores_Vision/caz
 # Special rule for the target package
 package: preinstall
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Run CPack packaging tool..."
-	/usr/bin/cpack --config ./CPackConfig.cmake
+	cd "/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/Release" && /usr/bin/cpack --config ./CPackConfig.cmake
 .PHONY : package
 
 # Special rule for the target package
@@ -78,7 +78,7 @@ package/fast: package
 # Special rule for the target package_source
 package_source:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Run CPack packaging tool for source..."
-	/usr/bin/cpack --config ./CPackSourceConfig.cmake /home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores\ nuevo\ en\ c/Release/CPackSourceConfig.cmake
+	cd "/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/Release" && /usr/bin/cpack --config ./CPackSourceConfig.cmake /home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores\ nuevo\ en\ c/Release/CPackSourceConfig.cmake
 .PHONY : package_source
 
 # Special rule for the target package_source
@@ -152,14 +152,14 @@ install/strip/fast: preinstall/fast
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start "/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/Release/CMakeFiles" "/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/Release//CMakeFiles/progress.marks"
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
+	cd "/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/Release" && $(CMAKE_COMMAND) -E cmake_progress_start "/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/Release/CMakeFiles" "/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/Release/3rdparty/Crow//CMakeFiles/progress.marks"
+	cd "/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/Release" && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 3rdparty/Crow/all
 	$(CMAKE_COMMAND) -E cmake_progress_start "/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/Release/CMakeFiles" 0
 .PHONY : all
 
 # The main clean target
 clean:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 clean
+	cd "/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/Release" && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 3rdparty/Crow/clean
 .PHONY : clean
 
 # The main clean target
@@ -168,92 +168,32 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 preinstall
+	cd "/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/Release" && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 3rdparty/Crow/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 preinstall
+	cd "/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/Release" && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 3rdparty/Crow/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	$(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd "/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/Release" && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
-#=============================================================================
-# Target rules for targets named Cazadores_vision
+# Convenience name for target.
+3rdparty/Crow/CMakeFiles/uninstall.dir/rule:
+	cd "/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/Release" && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 3rdparty/Crow/CMakeFiles/uninstall.dir/rule
+.PHONY : 3rdparty/Crow/CMakeFiles/uninstall.dir/rule
 
-# Build rule for target.
-Cazadores_vision: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Cazadores_vision
-.PHONY : Cazadores_vision
-
-# fast build rule for target.
-Cazadores_vision/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Cazadores_vision.dir/build.make CMakeFiles/Cazadores_vision.dir/build
-.PHONY : Cazadores_vision/fast
-
-#=============================================================================
-# Target rules for targets named uninstall
-
-# Build rule for target.
-uninstall: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 uninstall
+# Convenience name for target.
+uninstall: 3rdparty/Crow/CMakeFiles/uninstall.dir/rule
 .PHONY : uninstall
 
 # fast build rule for target.
 uninstall/fast:
-	$(MAKE) $(MAKESILENT) -f 3rdparty/Crow/CMakeFiles/uninstall.dir/build.make 3rdparty/Crow/CMakeFiles/uninstall.dir/build
+	cd "/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/Release" && $(MAKE) $(MAKESILENT) -f 3rdparty/Crow/CMakeFiles/uninstall.dir/build.make 3rdparty/Crow/CMakeFiles/uninstall.dir/build
 .PHONY : uninstall/fast
-
-src/Read_Camera.o: src/Read_Camera.cpp.o
-.PHONY : src/Read_Camera.o
-
-# target to build an object file
-src/Read_Camera.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Cazadores_vision.dir/build.make CMakeFiles/Cazadores_vision.dir/src/Read_Camera.cpp.o
-.PHONY : src/Read_Camera.cpp.o
-
-src/Read_Camera.i: src/Read_Camera.cpp.i
-.PHONY : src/Read_Camera.i
-
-# target to preprocess a source file
-src/Read_Camera.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Cazadores_vision.dir/build.make CMakeFiles/Cazadores_vision.dir/src/Read_Camera.cpp.i
-.PHONY : src/Read_Camera.cpp.i
-
-src/Read_Camera.s: src/Read_Camera.cpp.s
-.PHONY : src/Read_Camera.s
-
-# target to generate assembly for a file
-src/Read_Camera.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Cazadores_vision.dir/build.make CMakeFiles/Cazadores_vision.dir/src/Read_Camera.cpp.s
-.PHONY : src/Read_Camera.cpp.s
-
-src/cazadores.o: src/cazadores.cpp.o
-.PHONY : src/cazadores.o
-
-# target to build an object file
-src/cazadores.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Cazadores_vision.dir/build.make CMakeFiles/Cazadores_vision.dir/src/cazadores.cpp.o
-.PHONY : src/cazadores.cpp.o
-
-src/cazadores.i: src/cazadores.cpp.i
-.PHONY : src/cazadores.i
-
-# target to preprocess a source file
-src/cazadores.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Cazadores_vision.dir/build.make CMakeFiles/Cazadores_vision.dir/src/cazadores.cpp.i
-.PHONY : src/cazadores.cpp.i
-
-src/cazadores.s: src/cazadores.cpp.s
-.PHONY : src/cazadores.s
-
-# target to generate assembly for a file
-src/cazadores.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Cazadores_vision.dir/build.make CMakeFiles/Cazadores_vision.dir/src/cazadores.cpp.s
-.PHONY : src/cazadores.cpp.s
 
 # Help Target
 help:
@@ -270,13 +210,6 @@ help:
 	@echo "... package_source"
 	@echo "... rebuild_cache"
 	@echo "... uninstall"
-	@echo "... Cazadores_vision"
-	@echo "... src/Read_Camera.o"
-	@echo "... src/Read_Camera.i"
-	@echo "... src/Read_Camera.s"
-	@echo "... src/cazadores.o"
-	@echo "... src/cazadores.i"
-	@echo "... src/cazadores.s"
 .PHONY : help
 
 
@@ -288,6 +221,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	$(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd "/home/francisco/Documentos/000Proyectos/Cazadores_Vision/cazadores nuevo en c/Release" && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

@@ -1,0 +1,83 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    flex-direction: row;
+    align-items: start;
+    justify-content: start;
+    height: 100vh;
+    margin: 0;
+    background-color: #262525;
+    color: #fff;
+}
+.viewport{
+    width: 1280px;
+    height: 720px;
+    margin: 5px;
+    border-radius: 5px;
+}
+.msg{
+    margin: 5px;
+    font-size: 20px;
+    font-weight: bold;
+}
+.panel{
+    width: 70vw;
+}
+.panel, .cmd-cnt{
+    margin: 15px;
+    padding: 25px;
+    background-color: #302E2E;
+    border-radius: 10px;
+    text-align: center;
+}
+.cmd-cnt{
+    display: flex;
+    flex-direction: column;
+    height: 80vh;
+    width: 20vw;
+}
+.Title{
+    padding: 15px;
+    font-size: 30px;
+    font-weight: bold;
+}
+.cmd-cnt Button{
+    height: 50px;
+    background-color: #F00E56;
+    margin-top: 15px;
+    border: none;
+    font-size: 18px;
+    font-weight: 500;
+    color: #fff;
+    border-radius: 10px;
+}
+.cmd-cnt Button:hover{
+    background-color: #E00D51;
+    border: 2px solid #FFFFFF;
+}
+.cmd-cnt Button:active{
+    background-color: #D10D4C;
+    border: 2px solid #FFFFFF;
+}
+.advertense{
+    margin-top: 10px;
+}
+select{
+  padding: 10px 10px;
+  font-size: 16px;
+  border: 2px solid #333;
+  border-radius: 6px;
+  cursor: pointer;
+  background-color: #262525;
+  color: #FFFFFF;
+}
+.num{
+    background: #262525;
+    padding: 10px 5px;
+    font-size: 16px;
+    border: 2px solid #333;
+    color: #FFF;
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+    }
+}

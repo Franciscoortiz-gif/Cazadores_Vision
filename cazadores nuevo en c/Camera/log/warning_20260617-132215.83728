@@ -1,0 +1,6 @@
+Log file created at: 2026/06/17 13:22:15
+Running on machine: francisco-ThinkPad-P50
+Log line format: [IWEF]mmdd hh:mm:ss.uuuuuu threadid file:line] msg
+W0617 13:22:15.744774 83734 CameraGigeBase.cpp:4521] Device:(name:HT-GE502C-T1-C sn:055082523062 cam:192.168.1.100-1000-1400 nic:enp0s31f6-192.168.1.50-1000M-1500)ReConnected, TolCount:1, Flag:1
+W0617 13:25:49.516919 83734 CameraGigeBase.cpp:4521] Device:(name:HT-GE502C-T1-C sn:055082523062 cam:192.168.1.100-1000-1400 nic:enp0s31f6-192.168.1.50-1000M-1500)ReConnected, TolCount:2, Flag:1
+W0617 13:27:47.783404 83734 CameraGigeBase.cpp:4521] Device:(name:HT-GE502C-T1-C sn:055082523062 cam:192.168.1.100-1000-1400 nic:enp0s31f6-192.168.1.50-1000M-1500)ReConnected, TolCount:3, Flag:1
